@@ -4,8 +4,23 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import F2E_one from "../img/F2E one.webp";
+import getWallet from "./wallet_connect";
+
 class navBar extends Component {
-  state = {};
+  state = {connect_btn:"Connect Wallet"};
+
+  componentDidMount = async()=>{
+    await this.connectWallet();
+  }
+
+   connectWallet = async()=> {
+    let wallet = await getWallet();
+    if(wallet.account.length > 0){
+      let account = wallet.account[0].substr(0,4)+"......"+wallet.account[0].substr(38,41)
+    this.setState({connect_btn:account})
+    }
+ 
+  }
   render() {
     return (
       <Navbar bg="light" expand="lg" sticky="top">
@@ -30,7 +45,7 @@ class navBar extends Component {
               <Nav.Link href="#action2">News</Nav.Link>
               <Nav.Link href="#action2">Contact</Nav.Link>
             </Nav>
-            <Button variant="outline-success">connect Wallet</Button>
+            <Button onClick={this.connectWallet} variant="outline-success">{this.state.connect_btn}</Button>
           </Navbar.Collapse>
         </Container>
       </Navbar>
