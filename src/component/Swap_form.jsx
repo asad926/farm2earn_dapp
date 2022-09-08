@@ -5,6 +5,7 @@ import Form from "react-bootstrap/Form";
 import seedx_logo from "../img/seedx_logo.png";
 import USDT_logo from "../img/USDT_logo.png";
 import getWallet from "./wallet_connect";
+import { RiSwapFill } from "react-icons/ri";
 class swap_form extends Component {
   state = {};
   componentDidMount=async()=>{
@@ -25,6 +26,9 @@ class swap_form extends Component {
               <Button>
                 <img src={seedx_logo} alt="" height="24px" /> SEEDX
               </Button>
+            </div>
+            <div className="swap_arrow">
+              <RiSwapFill size="32px" />
             </div>
             <div className="content">
               <Form.Control type="number" placeholder="0.0" />
