@@ -4,8 +4,16 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import seedx_logo from "../img/seedx_logo.png";
 import USDT_logo from "../img/USDT_logo.png";
+import getWallet from "./wallet_connect";
 class swap_form extends Component {
   state = {};
+  componentDidMount=async()=>{
+
+    let wallet = await getWallet();
+
+    console.log(wallet);
+ 
+   }
   render() {
     return (
       <Container fluid className="swap_form vh-100 pt-5">
