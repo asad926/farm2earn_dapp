@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
@@ -10,9 +11,9 @@ class navBar extends Component {
     return (
       <Navbar bg="light" expand="lg" sticky="top">
         <Container fluid>
-          <Navbar.Brand href="#">
+          <Link to="/swap" className="navbar-brand">
             <img src={F2E_one} alt="" width="200px" />
-          </Navbar.Brand>
+          </Link>
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
             <Nav
@@ -30,7 +31,9 @@ class navBar extends Component {
               <Nav.Link href="#action2">News</Nav.Link>
               <Nav.Link href="#action2">Contact</Nav.Link>
             </Nav>
-            <Button variant="outline-success">connect Wallet</Button>
+            <Link to="/staking" className="btn btn-outline-success">
+              connect Wallet
+            </Link>
           </Navbar.Collapse>
         </Container>
       </Navbar>
