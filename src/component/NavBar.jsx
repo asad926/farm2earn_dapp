@@ -4,30 +4,32 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import F2E_one from "../img/F2E one.webp";
+import F2E_one from "../img/F2E one.png";
 import getWallet from "./wallet_connect";
 
 class navBar extends Component {
-  state = {connect_btn:"Connect Wallet"};
+  state = { connect_btn: "Connect Wallet" };
 
-  componentDidMount = async()=>{
+  componentDidMount = async () => {
     await this.connectWallet();
-  }
+  };
 
-   connectWallet = async()=> {
+  connectWallet = async () => {
     let wallet = await getWallet();
-    if(wallet.account.length > 0){
-      let account = wallet.account[0].substr(0,4)+"......"+wallet.account[0].substr(38,41)
-    this.setState({connect_btn:account})
+    if (wallet.account.length > 0) {
+      let account =
+        wallet.account[0].substr(0, 4) +
+        "......" +
+        wallet.account[0].substr(38, 41);
+      this.setState({ connect_btn: account });
     }
- 
-  }
+  };
   render() {
     return (
       <Navbar bg="light" expand="lg" sticky="top">
-        <Container fluid>
-          <Link to="/swap" className="navbar-brand">
-            <img src={F2E_one} alt="" width="200px" />
+        <Container>
+          <Link to="#" className="navbar-brand">
+            <img src={F2E_one} alt="" width="220px" />
           </Link>
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
@@ -36,19 +38,16 @@ class navBar extends Component {
               style={{ maxHeight: "100px" }}
               navbarScroll
             >
-              <Nav.Link href="#action1">Home</Nav.Link>
-              <Nav.Link href="#action2">Login</Nav.Link>
-              <Nav.Link href="#action2">About</Nav.Link>
-              <Nav.Link href="#action2">Data</Nav.Link>
-              <Nav.Link href="#action2">SEEDX</Nav.Link>
-              <Nav.Link href="#action2">Team</Nav.Link>
-              <Nav.Link href="#action2">Docs</Nav.Link>
-              <Nav.Link href="#action2">News</Nav.Link>
-              <Nav.Link href="#action2">Contact</Nav.Link>
+              <Nav.Link href="#">Home</Nav.Link>
+              <Nav.Link href="#">SEEDX</Nav.Link>
+              <Link className="nav-link" to="/swap">
+                Swap
+              </Link>
+              <Link className="nav-link" to="/staking">
+                Staking
+              </Link>
             </Nav>
-            <Link to="/staking" className="btn btn-outline-success">
-              connect Wallet
-            </Link>
+            <Button variant="outline-success">connect Wallet</Button>
           </Navbar.Collapse>
         </Container>
       </Navbar>

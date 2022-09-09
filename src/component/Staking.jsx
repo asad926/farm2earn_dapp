@@ -79,7 +79,7 @@ class staking extends Component {
                       <p>
                         Lock period: <span>{this.state.lock_period}</span> Days
                       </p>
-                      <p>Min. Amount: 500 DIX</p>
+                      <p>Min. Amount: 500 SEEDX</p>
                     </div>
                     <div className="d-flex flex-column">
                       <p>
@@ -91,7 +91,7 @@ class staking extends Component {
                     </div>
                   </div>
                   <Form.Label htmlFor="" className="fs-4 fw-bold">
-                    Balance: 0 DIX
+                    Balance: 0 SEEDX
                   </Form.Label>
                   <InputGroup>
                     <Form.Control

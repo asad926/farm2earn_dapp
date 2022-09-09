@@ -1,5 +1,5 @@
 .swap_form {
-  background-color: #f8f8f8;
+  // background-color: #f8f8f8;
   .swap_form_box {
     border-radius: 20px;
     background-color: #ffffff;
@@ -31,7 +31,7 @@
         border-radius: 8px;
         position: absolute;
         width: 110px;
-        top: 19%;
+        top: 11%;
         right: 3%;
         &:hover {
           background-color: #50a04a;
@@ -42,8 +42,8 @@
     .swap_arrow {
       display: flex;
       justify-content: center;
-      margin-top: -37px;
-      margin-bottom: 5px;
+      margin-top: -47px;
+      margin-bottom: 27px;
 
       svg {
         cursor: pointer;
@@ -89,6 +89,15 @@
 }
 .navbar {
   min-height: 140px;
+  .navbar-nav {
+    .nav-link {
+      font-weight: 600;
+      font-size: 18px;
+      &:hover {
+        color: rgba(61, 210, 227);
+      }
+    }
+  }
 }
 .footer {
   // background-color: lightgray;
