@@ -92,7 +92,7 @@ class swap_form extends Component {
           .approve(
             swapContractAbi.address,
             web3.utils.toWei(
-              web3.utils.toBN(this.state.usdtValue).toString(),
+              this.state.usdtValue.toString(),
               "mwei"
             )
           )
@@ -101,7 +101,7 @@ class swap_form extends Component {
         await SwapContract.methods
           .buyToken(
             web3.utils.toWei(
-              web3.utils.toBN(this.state.seedxValue).toString(),
+              this.state.seedxValue.toString(),
               "ether"
             )
           )
@@ -117,7 +117,7 @@ class swap_form extends Component {
           .approve(
             swapContractAbi.address,
             web3.utils.toWei(
-              web3.utils.toBN(this.state.seedxValue).toString(),
+              this.state.seedxValue.toString(),
               "ether"
             )
           )
@@ -126,7 +126,7 @@ class swap_form extends Component {
         await SwapContract.methods
           .sellToken(
             web3.utils.toWei(
-              web3.utils.toBN(this.state.seedxValue).toString(),
+              this.state.seedxValue.toString(),
               "ether"
             )
           )
