@@ -47,7 +47,7 @@ class navBar extends Component {
                 Staking
               </Link>
             </Nav>
-            <Button variant="outline-success">connect Wallet</Button>
+            <Button onClick={this.connectWallet} variant="outline-success">{this.state.connect_btn}</Button>
           </Navbar.Collapse>
         </Container>
       </Navbar>
