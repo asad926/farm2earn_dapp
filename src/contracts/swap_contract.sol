@@ -288,8 +288,8 @@ contract SeedxSwap is Ownable {
   uint public creationTime = block.timestamp;
   uint public buy_rate = uint256(1000).mul(1e18).div(1e3); // 1 token for 1 USDT
   uint public sell_rate = uint256(750).mul(1e18).div(1e3); // 1 token for 0.75 USDT
-  IERC20 public SeedX;
-  IERC20 public USDT;
+  IERC20 private SeedX;
+  IERC20 private USDT;
 
   event BuyToken(address user, uint amount, uint usdtAmount, uint balance);
   event SellToken(address user, uint amount, uint usdtAmount, uint balance);
