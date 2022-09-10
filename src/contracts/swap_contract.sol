@@ -293,7 +293,8 @@ contract SeedxSwap is Ownable {
 
   event BuyToken(address user, uint amount, uint usdtAmount, uint balance);
   event SellToken(address user, uint amount, uint usdtAmount, uint balance);
-  event Withdraw(address from, address to, uint256 amount);
+  event WithdrawSeedX(address from, address to, uint256 seedxAmount);
+  event WithdrawUSDT(address from, address to, uint256 usdtAmount);
 
 
   /**
@@ -310,8 +311,9 @@ contract SeedxSwap is Ownable {
   */
   function buyToken(uint amount) public returns (bool success) {
     // ensure enough tokens are owned by the depositor
-    uint usdtAmount = amount.mul(1e6).div(buy_rate);
+    uint usdtAmount = amount.mul(buy_rate).div(1e30);
     require(USDT.balanceOf(msg.sender) >= usdtAmount,"Address: Insufficient usdt to buy seedx.");
+    require(SeedX.balanceOf(address(this)) >= amount,"Contract: Insufficient Seedx balance.");
     require(USDT.transferFrom(msg.sender,address(this), usdtAmount));
     require(SeedX.transfer(msg.sender,amount));
 
@@ -326,7 +328,7 @@ contract SeedxSwap is Ownable {
   function sellToken(uint amount) public returns (bool success) {
     // ensure enough funds
     uint usdtAmount = amount.mul(sell_rate).div(1e30);
-    require(USDT.balanceOf(address(this)) >= usdtAmount,"Exchange: Insufficient usdt balance.");
+    require(USDT.balanceOf(address(this)) >= usdtAmount,"Contract: Insufficient usdt balance.");
     require(SeedX.balanceOf(msg.sender) >= amount,"Address: Insufficient seedx balance.");
     require(SeedX.transferFrom(msg.sender,address(this),amount));
     require(USDT.transfer(msg.sender, usdtAmount));
@@ -335,25 +337,46 @@ contract SeedxSwap is Ownable {
 
     return true;
   }
+/**
+  *  Sender must be owner to requests to withdraw all [totalUsdt,totalSeedX] of tokens from the contract.
+  */
+  function withdrawUsdt() public onlyOwner {
+    uint256 totalUsdt = USDT.balanceOf(address(this));
+    require(totalUsdt > 0, "No USDT present in swap contract");
+    require(USDT.transfer(msg.sender,totalUsdt), "Failed to withdraw USDT");
 
-  function withdraw() public onlyOwner {
-    uint256 totalBalance = USDT.balanceOf(address(this));
-    require(totalBalance > 0, "No USDT present in swap contract");
-    require(USDT.transfer(msg.sender,totalBalance), "Failed to withdraw");
-
-    emit Withdraw(address(this), msg.sender, totalBalance);
+    emit WithdrawUSDT(address(this), msg.sender, totalUsdt);
   }
+
+  /**
+  *  Sender must be owner to requests to withdraw all [totalUsdt,totalSeedX] of tokens from the contract.
+  */
+  function withdrawSeedx() public onlyOwner {
+    uint256 totalSeedX = SeedX.balanceOf(address(this));
+    require(totalSeedX > 0, "No Seedx present in swap contract");
+    require(SeedX.transfer(msg.sender,totalSeedX), "Failed to withdraw SeedX");
+
+    emit WithdrawSeedX(address(this), msg.sender, totalSeedX);
+  }
+
+  /**
+  *  To update the buy and sell rate there need to multiple new rate with 1000
+  *  then send it in below updating methods 
+  *  LIKE: 
+  *       Want to set buy rate 2 then multiple it with 1000 and then pass in updateBuyRate(2*1000).
+  *       Same like for updateSellRate(1.5*1000).
+  */
 
 
   function updateBuyRate(uint newRate) onlyOwner public returns (bool success) {
-    // make sure rate is never less than zero
-    require(newRate >= 0,"new rate can't be zero");
+    // make sure buy rate is never less than zero
+    require(newRate >= 0,"new buy rate can't be zero");
     buy_rate = newRate.mul(1e18).div(1e3);
     return true;
   }
   function updateSellRate(uint newRate) onlyOwner public returns (bool success) {
-    // make sure rate is never less than zero
-    require(newRate >= 0,"new rate can't be zero");
+    // make sure sell rate is never less than zero
+    require(newRate >= 0,"new sell rate can't be zero");
     sell_rate = newRate.mul(1e18).div(1e3);
     return true;
   }
