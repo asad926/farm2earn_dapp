@@ -12,6 +12,9 @@ class navBar extends Component {
 
   componentDidMount = async () => {
     await this.connectWallet();
+    window.ethereum.on("accountsChanged",async()=>{
+      await this.connectWallet()
+    });
   };
 
   connectWallet = async () => {

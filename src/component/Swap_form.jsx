@@ -17,9 +17,19 @@ class swap_form extends Component {
     usdtValue: parseFloat(0.0),
     seedxValue: parseFloat(0.0),
     swapBtn: "Approve",
+    web3:null,
+    account:"",
+    USDT:null,
+    SeedX:null,
+    Swap:null,
+    buyRate:0.0,
+    sellRate:0.0
   };
   componentDidMount = async () => {
     await this.loadBlockchainData();
+    window.ethereum.on("accountsChanged",async()=>{
+      await this.loadBlockchainData()
+    });
   };
 
   loadBlockchainData = async () => {
@@ -32,7 +42,15 @@ class swap_form extends Component {
       tokenAbi.abi,
       tokenAbi.seedxAddress
     );
-
+    let swapContract = new web3.eth.Contract(
+      swapContractAbi.abi,
+      swapContractAbi.address
+    );
+    this.setState({web3:web3,account:account[0],USDT:usdtContract,SeedX:seedxContract,Swap:swapContract})
+    let buy_rate = await swapContract.methods.buy_rate().call();
+    let sell_rate = await swapContract.methods.sell_rate().call();
+    this.setState({buyRate:web3.utils.fromWei(web3.utils.toBN(buy_rate).toString(), "ether")})
+    this.setState({sellRate:web3.utils.fromWei(web3.utils.toBN(sell_rate).toString(), "ether")})
     let usdtBalance = await usdtContract.methods.balanceOf(account[0]).call();
     this.setState({
       usdt:
@@ -51,10 +69,10 @@ class swap_form extends Component {
     if (this.state.swapped) {
       this.setState({ swapped: false });
       this.setState({ usdtValue: this.state.usdtValue });
-      this.setState({ seedxValue: this.state.usdtValue * 1 });
+      this.setState({ seedxValue: this.state.usdtValue * this.state.buyRate });
     } else {
       this.setState({ swapped: true });
-      this.setState({ usdtValue: this.state.seedxValue * 0.75 });
+      this.setState({ usdtValue: this.state.seedxValue * this.state.sellRate });
       this.setState({ seedxValue: this.state.seedxValue });
     }
   };
@@ -62,33 +80,21 @@ class swap_form extends Component {
   usdtSwappingValue = async (e) => {
     console.log(e.target.value, "usdt");
     this.setState({ usdtValue: e.target.value });
-    this.setState({ seedxValue: e.target.value * 1 });
+    this.setState({ seedxValue: e.target.value * this.state.buyRate });
   };
   seedxSwappingValue = async (e) => {
     console.log(e.target.value, "seedx");
     this.setState({ seedxValue: e.target.value });
-    this.setState({ usdtValue: e.target.value * 0.75 });
+    this.setState({ usdtValue: e.target.value * this.state.sellRate });
   };
 
   swapTokens = async () => {
-    let { web3, account } = await getWallet();
-    let SwapContract = new web3.eth.Contract(
-      swapContractAbi.abi,
-      swapContractAbi.address
-    );
-    let usdtContract = new web3.eth.Contract(
-      tokenAbi.abi,
-      tokenAbi.usdtAddress
-    );
-    let seedxContract = new web3.eth.Contract(
-      tokenAbi.abi,
-      tokenAbi.seedxAddress
-    );
+    let { web3, account,USDT,SeedX,Swap } = this.state;
 
     if (!this.state.swapped) {
       try {
         this.setState({ swapBtn: "Approving..." });
-        await usdtContract.methods
+        await USDT.methods
           .approve(
             swapContractAbi.address,
             web3.utils.toWei(
@@ -96,16 +102,16 @@ class swap_form extends Component {
               "mwei"
             )
           )
-          .send({ from: account[0] });
+          .send({ from: account });
         this.setState({ swapBtn: "Swapping..." });
-        await SwapContract.methods
+        await Swap.methods
           .buyToken(
             web3.utils.toWei(
               this.state.seedxValue.toString(),
               "ether"
             )
           )
-          .send({ from: account[0] });
+          .send({ from: account });
         this.setState({ swapBtn: "Approve" });
       } catch (error) {
         console.log(error.message);
@@ -113,7 +119,7 @@ class swap_form extends Component {
     } else {
       try {
         this.setState({ swapBtn: "Approving...." });
-        await seedxContract.methods
+        await SeedX.methods
           .approve(
             swapContractAbi.address,
             web3.utils.toWei(
@@ -121,16 +127,16 @@ class swap_form extends Component {
               "ether"
             )
           )
-          .send({ from: account[0] });
+          .send({ from: account });
         this.setState({ swapBtn: "Swapping..." });
-        await SwapContract.methods
+        await Swap.methods
           .sellToken(
             web3.utils.toWei(
               this.state.seedxValue.toString(),
               "ether"
             )
           )
-          .send({ from: account[0] });
+          .send({ from: account });
         this.setState({ swapBtn: "Approve" });
       } catch (error) {
         console.log(error.message);
