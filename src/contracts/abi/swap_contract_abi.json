@@ -1,6 +1,6 @@
 {
 	"address": "0x6465180127033558310d8A42EA8a311Eee86d630",
-	"abi": [
+	"abi": 
 		{
 			"inputs": [
 				{
@@ -116,38 +116,37 @@
 				{
 					"indexed": false,
 					"internalType": "uint256",
-					"name": "amount",
+					"name": "seedxAmount",
 					"type": "uint256"
 				}
 			],
-			"name": "Withdraw",
+			"name": "WithdrawSeedX",
 			"type": "event"
 		},
 		{
-			"inputs": [],
-			"name": "SeedX",
-			"outputs": [
+			"anonymous": false,
+			"inputs": [
 				{
-					"internalType": "contract IERC20",
-					"name": "",
+					"indexed": false,
+					"internalType": "address",
+					"name": "from",
 					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "address",
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "usdtAmount",
+					"type": "uint256"
 				}
 			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [],
-			"name": "USDT",
-			"outputs": [
-				{
-					"internalType": "contract IERC20",
-					"name": "",
-					"type": "address"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
+			"name": "WithdrawUSDT",
+			"type": "event"
 		},
 		{
 			"inputs": [
@@ -299,7 +298,14 @@
 		},
 		{
 			"inputs": [],
-			"name": "withdraw",
+			"name": "withdrawSeedx",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "withdrawUsdt",
 			"outputs": [],
 			"stateMutability": "nonpayable",
 			"type": "function"
