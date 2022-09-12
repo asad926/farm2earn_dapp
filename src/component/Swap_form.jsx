@@ -16,7 +16,7 @@ class swap_form extends Component {
     swapped: false,
     usdtValue: parseFloat(0.0),
     seedxValue: parseFloat(0.0),
-    swapBtn: "Approve",
+    swapBtn: "Swap",
     web3:null,
     account:"",
     USDT:null,
@@ -90,7 +90,7 @@ class swap_form extends Component {
 
   swapTokens = async () => {
     let { web3, account,USDT,SeedX,Swap } = this.state;
-
+    if(this.state.swapBtn != "Swap") return;
     if (!this.state.swapped) {
       try {
         this.setState({ swapBtn: "Approving..." });
@@ -114,6 +114,7 @@ class swap_form extends Component {
           .send({ from: account });
         this.setState({ swapBtn: "Approve" });
       } catch (error) {
+        this.setState({ swapBtn: "Swap" });
         console.log(error.message);
       }
     } else {
@@ -139,6 +140,7 @@ class swap_form extends Component {
           .send({ from: account });
         this.setState({ swapBtn: "Approve" });
       } catch (error) {
+        this.setState({ swapBtn: "Swap" });
         console.log(error.message);
       }
     }
