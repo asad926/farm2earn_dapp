@@ -9,6 +9,7 @@ function App() {
     <BrowserRouter>
       <NaveBar />
       <Routes>
+        <Route exact path="/" element={<Swap_form />} />
         <Route exact path="/swap" element={<Swap_form />} />
         <Route exact path="/staking" element={<Staking />} />
       </Routes>
