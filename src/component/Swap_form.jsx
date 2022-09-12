@@ -47,6 +47,7 @@ class swap_form extends Component {
       swapContractAbi.abi,
       swapContractAbi.address
     );
+    
     this.setState({web3:web3,account:account[0],USDT:usdtContract,SeedX:seedxContract,Swap:swapContract})
     let buy_rate = await swapContract.methods.buy_rate().call();
     let sell_rate = await swapContract.methods.sell_rate().call();
@@ -90,6 +91,7 @@ class swap_form extends Component {
     this.setState({ usdtValue: e.target.value });
     this.setState({ seedxValue: e.target.value * this.state.buyRate });
   };
+  
   seedxSwappingValue = async (e) => {
     console.log(e.target.value, "seedx");
     this.setState({ seedxValue: e.target.value });
@@ -120,7 +122,7 @@ class swap_form extends Component {
             )
           )
           .send({ from: account,gasPrice:await this.polygonGasStation() });
-        this.setState({ swapBtn: "Approve" });
+        this.setState({ swapBtn: "Swap" });
       } catch (error) {
         this.setState({ swapBtn: "Swap" });
         console.log(error.message);
@@ -146,7 +148,7 @@ class swap_form extends Component {
             )
           )
           .send({ from: account, gasPrice:await this.polygonGasStation() });
-        this.setState({ swapBtn: "Approve" });
+        this.setState({ swapBtn: "Swap" });
       } catch (error) {
         this.setState({ swapBtn: "Swap" });
         console.log(error.message);
