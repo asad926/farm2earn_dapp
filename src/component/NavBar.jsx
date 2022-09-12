@@ -31,7 +31,7 @@ class navBar extends Component {
     return (
       <Navbar bg="light" expand="lg" sticky="top">
         <Container>
-          <Link to="#" className="navbar-brand">
+          <Link to="https://www.farm2earn.io/" className="navbar-brand">
             <img src={F2E_one} alt="" width="220px" />
           </Link>
           <Navbar.Toggle aria-controls="navbarScroll" />
@@ -41,8 +41,8 @@ class navBar extends Component {
               style={{ maxHeight: "100px" }}
               navbarScroll
             >
-              <Nav.Link href="#">Home</Nav.Link>
-              <Nav.Link href="#">SEEDX</Nav.Link>
+              <Nav.Link href="https://www.farm2earn.io/">Home</Nav.Link>
+              <Nav.Link href="https://www.farm2earn.io/seedx">SEEDX</Nav.Link>
               <Link className="nav-link" to="/swap">
                 Swap
               </Link>
