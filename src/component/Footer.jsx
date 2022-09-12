@@ -9,24 +9,18 @@ class footer extends Component {
     return (
       <div className="footer">
         <div className="content">
-          <h5 className="text-center mt-4">Subscribe Form</h5>
-          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-            <Form.Control type="email" placeholder="Email Address" />
-          </Form.Group>
-          <Button variant="dark" className="mb-5">
-            Submit
-          </Button>
+      
           <div className="Social_links my-5">
-            <a href="#">
+            <a href="https://www.youtube.com/channel/UCrKYr_V7e_iDu-AikEWeB5A">
               <AiFillYoutube size="24px" />
             </a>
-            <a href="#">
+            <a href="https://discord.gg/zFuHN4H7Tx">
               <FaDiscord size="24px" />
             </a>
-            <a href="#">
+            <a href="https://www.facebook.com/farm2earn/?_rdc=2&_rdr">
               <FaFacebookF size="24px" />
             </a>
-            <a href="#">
+            <a href="https://twitter.com/farmtoearn">
               <FaTwitter size="24px" />
             </a>
           </div>
