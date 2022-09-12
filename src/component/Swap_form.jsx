@@ -5,6 +5,7 @@ import Form from "react-bootstrap/Form";
 import seedx_logo from "../img/seedx_logo.png";
 import USDT_logo from "../img/USDT_logo.png";
 import getWallet from "./wallet_connect";
+import axios from "axios";
 import { RiSwapFill } from "react-icons/ri";
 import tokenAbi from "../contracts/abi/ERC20.json";
 import swapContractAbi from "../contracts/abi/swap_contract_abi.json";
