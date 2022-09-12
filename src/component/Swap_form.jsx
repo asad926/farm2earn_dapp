@@ -76,6 +76,13 @@ class swap_form extends Component {
       this.setState({ seedxValue: this.state.seedxValue });
     }
   };
+  
+  polygonGasStation = async() =>
+    {
+        let estimatedGas = await axios.get("https://gasstation-mainnet.matic.network/v2");
+        let gas_price = parseFloat(Math.random() * (estimatedGas.data.standard.maxFee - estimatedGas.data.safeLow.maxFee + 1.0000) + estimatedGas.data.safeLow.maxFee).toFixed(9)
+        return this.state.web3.utils.toWei("" + gas_price, 'gwei');
+    }
 
   usdtSwappingValue = async (e) => {
     console.log(e.target.value, "usdt");
@@ -102,7 +109,7 @@ class swap_form extends Component {
               "mwei"
             )
           )
-          .send({ from: account });
+          .send({ from: account,gasPrice:await this.polygonGasStation() });
         this.setState({ swapBtn: "Swapping..." });
         await Swap.methods
           .buyToken(
@@ -111,7 +118,7 @@ class swap_form extends Component {
               "ether"
             )
           )
-          .send({ from: account });
+          .send({ from: account,gasPrice:await this.polygonGasStation() });
         this.setState({ swapBtn: "Approve" });
       } catch (error) {
         this.setState({ swapBtn: "Swap" });
@@ -128,7 +135,7 @@ class swap_form extends Component {
               "ether"
             )
           )
-          .send({ from: account });
+          .send({ from: account, gasPrice:await this.polygonGasStation() });
         this.setState({ swapBtn: "Swapping..." });
         await Swap.methods
           .sellToken(
@@ -137,7 +144,7 @@ class swap_form extends Component {
               "ether"
             )
           )
-          .send({ from: account });
+          .send({ from: account, gasPrice:await this.polygonGasStation() });
         this.setState({ swapBtn: "Approve" });
       } catch (error) {
         this.setState({ swapBtn: "Swap" });
