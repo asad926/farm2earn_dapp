@@ -31,9 +31,9 @@ class navBar extends Component {
     return (
       <Navbar bg="light" expand="lg" sticky="top">
         <Container>
-          <Link href="https://www.farm2earn.io/" className="navbar-brand">
+          <Nav.Link href="https://www.farm2earn.io/" className="navbar-brand">
             <img src={F2E_one} alt="" width="220px" />
-          </Link>
+          </Nav.Link>
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
             <Nav

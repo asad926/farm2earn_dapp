@@ -12,8 +12,8 @@ import swapContractAbi from "../contracts/abi/swap_contract_abi.json";
 
 class swap_form extends Component {
   state = {
-    seedx: "10 SEEDX",
-    usdt: "15 USDT",
+    seedx: "0 SEEDX",
+    usdt: "0 USDT",
     swapped: false,
     usdtValue: parseFloat(0.0),
     seedxValue: parseFloat(0.0),
