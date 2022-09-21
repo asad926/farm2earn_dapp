@@ -89,6 +89,10 @@
 }
 .navbar {
   min-height: 140px;
+  .d-grid{
+    justify-items:center;
+    margin-left: -2rem;
+  }
   .navbar-nav {
     margin-left: 7rem;
     .nav-link {
