@@ -7,34 +7,144 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import seedx_logo from "../img/seedx_logo.png";
+import tokenAbi from "../contracts/abi/ERC20.json";
+import stakingContractAbi from "../contracts/abi/staking_contract_abi.json";
+import getWallet from "./wallet_connect";
+import axios from "axios";
+
 class staking extends Component {
   state = {
     lock_period: "30",
-    APY_rate: "3%",
-    days30: "active",
-    days185: "",
-    days365: "",
+    APY_rate: "23%",
+    mini_stake: "100",
+    btn_disable: true,
+    seedx_balance: "0",
+    policy1: "active",
+    policy2: "",
+    policy3: "",
+    stakeAmount: "0",
+    alertMsg:"",
+    poolId: 1
   };
-  set_30days = () => {
-    this.setState({ days30: "active" });
-    this.setState({ days185: "" });
-    this.setState({ days365: "" });
-    this.setState({ lock_period: "30" });
-    this.setState({ APY_rate: "3%" });
+
+  componentDidMount = async()=>{
+    await this.loadBlockchainData()
+    window.ethereum.on("accountsChanged",async()=>{
+      await this.loadBlockchainData()
+    });
+  }
+
+  polygonGasStation = async() =>
+  {
+      let estimatedGas = await axios.get("https://gasstation-mainnet.matic.network/v2");
+      let gas_price = parseFloat(Math.random() * (estimatedGas.data.standard.maxFee - estimatedGas.data.safeLow.maxFee + 1.0000) + estimatedGas.data.safeLow.maxFee).toFixed(9)
+      return this.state.web3.utils.toWei("" + gas_price, 'gwei');
+  }
+
+  loadBlockchainData = async () => {
+    let { web3, account } = await getWallet();
+
+    let seedxContract = new web3.eth.Contract(
+      tokenAbi.abi,
+      tokenAbi.seedxAddress_
+    );
+    let stakeContract = new web3.eth.Contract(
+      stakingContractAbi.abi,
+      stakingContractAbi.address
+    );
+    let pool_1 = await stakeContract.methods.Pools(1).call();
+    let time = (pool_1.lockTime/86400/30.417).toFixed(0);
+    let rate = pool_1.rewardRate + "%";
+
+    this.setState({
+      web3:web3,account:account[0],
+      SeedX:seedxContract,
+      Stake:stakeContract,
+      lock_period: time,
+      APY_rate: rate,
+    })  
+    let seedxBalance = await seedxContract.methods.balanceOf(account[0]).call();
+    this.setState({
+      seedx_balance:
+        web3.utils.fromWei(web3.utils.toBN(seedxBalance).toString(), "ether")
+    });
   };
-  set_185days = () => {
-    this.setState({ days30: "" });
-    this.setState({ days185: "active" });
-    this.setState({ days365: "" });
-    this.setState({ lock_period: "185" });
-    this.setState({ APY_rate: "23%" });
+
+  set_policy1 = async() => {
+    let pool_1 = await this.state.Stake.methods.Pools(1).call();
+    let time = (pool_1.lockTime/86400/30.417).toFixed(0);
+    this.setState({ policy1: "active",poolId:1 });
+    this.setState({ policy2: "" });
+    this.setState({ policy3: "" });
+    this.setState({ lock_period: time});
+    this.setState({ APY_rate: pool_1.rewardRate + "%" });
   };
-  set_365days = () => {
-    this.setState({ days30: "" });
-    this.setState({ days185: "" });
-    this.setState({ days365: "active" });
-    this.setState({ lock_period: "365" });
-    this.setState({ APY_rate: "52%" });
+  set_policy2 = async() => {
+    let pool_2 = await this.state.Stake.methods.Pools(2).call();
+    let time = (pool_2.lockTime/86400/30.417).toFixed(0);
+    this.setState({ policy1: "" });
+    this.setState({ policy2: "active",poolId:2 });
+    this.setState({ policy3: "" });
+    this.setState({ lock_period: time });
+    this.setState({ APY_rate: pool_2.rewardRate + "%" });
+  };
+  set_policy3 = async() => {
+    let pool_3 = await this.state.Stake.methods.Pools(3).call();
+    let time = (pool_3.lockTime/86400/30.417).toFixed(0);
+    this.setState({ policy1: "" });
+    this.setState({ policy2: "" });
+    this.setState({ policy3: "active",poolId:3 });
+    this.setState({ lock_period: time });
+    this.setState({ APY_rate: pool_3.rewardRate + "%" });
+  }; 
+
+  stake = async() => {
+    let { web3, account,SeedX,Stake } = this.state;
+
+    try {
+      this.setState({ alertMsg: "Approving...",btn_disable:true });
+      let stakeInWei = web3.utils.toWei(
+        this.state.stakeAmount.toString(),
+        "ether"
+      )
+      let matic = web3.utils.toWei("1","ether");
+        await SeedX.methods
+          .approve(
+            stakingContractAbi.address,
+            stakeInWei
+          )
+          .send({ from: account, gasPrice:await this.polygonGasStation() });
+      this.setState({ alertMsg: "Staking..." });
+      await Stake.methods
+        .stake(
+          stakeInWei,
+          this.state.poolId
+        )
+        .send({ from: account,
+                gasPrice:await this.polygonGasStation(),
+                value:matic });
+      this.setState({ alertMsg: "Staked Successfully!" });
+    } catch (error) {
+      this.setState({ alertMsg: error.message });
+      console.log(error);
+    }
+
+  };
+
+  validateStakes = (e) => {
+    if(e.target.value>=100){
+      this.setState({
+        stakeAmount :e.target.value,
+        btn_disable: false,
+        alertMsg:""
+      });
+    }else{
+      this.setState({
+        stakeAmount :"",
+        btn_disable: true,
+        alertMsg:"Minimum 100 SEEDX required for staking"
+      });
+    }
   };
   render() {
     return (
@@ -55,31 +165,31 @@ class staking extends Component {
                     <Button
                       variant="outline-success"
                       className={this.state.days30}
-                      onClick={this.set_30days}
+                      onClick={this.set_policy1}
                     >
-                      30 DAYS
+                      30 MONTHS
                     </Button>
                     <Button
                       variant="outline-success"
                       className={this.state.days185}
-                      onClick={this.set_185days}
+                      onClick={this.set_policy2}
                     >
-                      185 DAYS
+                      48 MONTHS
                     </Button>
                     <Button
                       variant="outline-success"
                       className={this.state.days365}
-                      onClick={this.set_365days}
+                      onClick={this.set_policy3}
                     >
-                      365 DAYS
+                      60 MONTHS
                     </Button>
                   </div>
                   <div className="d-flex flex-wrap justify-content-between align-items-center">
                     <div className="d-flex flex-column me-4">
                       <p>
-                        Lock period: <span>{this.state.lock_period}</span> Days
+                        Lock period: <span>{this.state.lock_period}</span> Months
                       </p>
-                      <p>Min. Amount: 500 SEEDX</p>
+                      <p>Min. Amount: {this.state.mini_stake} SEEDX</p>
                     </div>
                     <div className="d-flex flex-column">
                       <p>
@@ -91,18 +201,22 @@ class staking extends Component {
                     </div>
                   </div>
                   <Form.Label htmlFor="" className="fs-4 fw-bold">
-                    Balance: 0 SEEDX
+                    Balance: {this.state.seedx_balance} SEEDX
                   </Form.Label>
                   <InputGroup>
                     <Form.Control
                       placeholder="0"
                       aria-label="Recipient's username with two button addons"
                       type="number"
+                      onChange={this.validateStakes}
                     />
-                    <Button variant="outline-success" disabled>
+                    <Button onClick={this.stake} variant="outline-success" disabled={this.state.btn_disable}>
                       Stake
                     </Button>
                   </InputGroup>
+                  <span className="fs-6" style={{color:"red"}}>
+                          {this.state.alertMsg}
+                        </span>
                 </div>
               </Col>
             </Row>

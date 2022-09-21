@@ -28,7 +28,7 @@ const getWallet = () =>
 
 const getChainsInfo = () =>
 {
-    if (window.location.host.indexOf("localhost") !== -1)
+    if (true)
     {
         return {
             chainId: "0x13881", //'80001',
