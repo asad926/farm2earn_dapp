@@ -36,13 +36,63 @@
 				{
 					"indexed": false,
 					"internalType": "uint256",
-					"name": "index",
+					"name": "userStake",
 					"type": "uint256"
 				},
 				{
 					"indexed": false,
 					"internalType": "uint256",
-					"name": "timestamp",
+					"name": "claimedAt",
+					"type": "uint256"
+				}
+			],
+			"name": "ClaimReward",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "previousOwner",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
+			],
+			"name": "OwnershipTransferred",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "user",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "poolId",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "stakedAt",
 					"type": "uint256"
 				}
 			],
@@ -50,44 +100,81 @@
 			"type": "event"
 		},
 		{
+			"anonymous": false,
 			"inputs": [
 				{
-					"components": [
-						{
-							"internalType": "address",
-							"name": "user",
-							"type": "address"
-						},
-						{
-							"internalType": "uint256",
-							"name": "amount",
-							"type": "uint256"
-						},
-						{
-							"internalType": "uint256",
-							"name": "since",
-							"type": "uint256"
-						},
-						{
-							"internalType": "uint256",
-							"name": "claimable",
-							"type": "uint256"
-						}
-					],
-					"internalType": "struct SeedxStaking.Stake",
-					"name": "_current_stake",
-					"type": "tuple"
+					"indexed": true,
+					"internalType": "address",
+					"name": "user",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "userStake",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "unstakedAt",
+					"type": "uint256"
 				}
 			],
-			"name": "calculateStakeReward",
-			"outputs": [
+			"name": "UnStaked",
+			"type": "event"
+		},
+		{
+			"stateMutability": "payable",
+			"type": "fallback"
+		},
+		{
+			"inputs": [
 				{
 					"internalType": "uint256",
 					"name": "",
 					"type": "uint256"
 				}
 			],
+			"name": "Pools",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "lockTime",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "rewardRate",
+					"type": "uint256"
+				}
+			],
 			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "_index",
+					"type": "uint256"
+				}
+			],
+			"name": "claimReward",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
 			"type": "function"
 		},
 		{
@@ -103,41 +190,93 @@
 				{
 					"components": [
 						{
+							"internalType": "address",
+							"name": "userWallet",
+							"type": "address"
+						},
+						{
 							"internalType": "uint256",
-							"name": "total_amount",
+							"name": "amount",
 							"type": "uint256"
 						},
 						{
-							"components": [
-								{
-									"internalType": "address",
-									"name": "user",
-									"type": "address"
-								},
-								{
-									"internalType": "uint256",
-									"name": "amount",
-									"type": "uint256"
-								},
-								{
-									"internalType": "uint256",
-									"name": "since",
-									"type": "uint256"
-								},
-								{
-									"internalType": "uint256",
-									"name": "claimable",
-									"type": "uint256"
-								}
-							],
-							"internalType": "struct SeedxStaking.Stake[]",
-							"name": "stakes",
-							"type": "tuple[]"
+							"internalType": "uint256",
+							"name": "stakeAt",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "endAt",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "totalReward",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "lastClaimedAt",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "poolId",
+							"type": "uint256"
+						},
+						{
+							"internalType": "bool",
+							"name": "activeStake",
+							"type": "bool"
 						}
 					],
-					"internalType": "struct SeedxStaking.StakingSummary",
+					"internalType": "struct StakeSEEDX.Stake[]",
 					"name": "",
-					"type": "tuple"
+					"type": "tuple[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "owner",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "renounceOwnership",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "_staker",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "_index",
+					"type": "uint256"
+				}
+			],
+			"name": "rewardInfo",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
 				}
 			],
 			"stateMutability": "view",
@@ -149,9 +288,104 @@
 					"internalType": "uint256",
 					"name": "_amount",
 					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "_poolId",
+					"type": "uint256"
 				}
 			],
 			"name": "stake",
+			"outputs": [],
+			"stateMutability": "payable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"name": "stakeHolders",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "totalRewardCollected",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "totalStaked",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "totalUnstaked",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address payable",
+					"name": "_wallet",
+					"type": "address"
+				}
+			],
+			"name": "transferFee",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
+			],
+			"name": "transferOwnership",
 			"outputs": [],
 			"stateMutability": "nonpayable",
 			"type": "function"
@@ -160,25 +394,115 @@
 			"inputs": [
 				{
 					"internalType": "uint256",
-					"name": "amount",
+					"name": "_amount",
 					"type": "uint256"
 				},
 				{
 					"internalType": "uint256",
-					"name": "index",
+					"name": "_index",
 					"type": "uint256"
 				}
 			],
 			"name": "unstake",
 			"outputs": [
 				{
-					"internalType": "uint256",
+					"internalType": "bool",
 					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "payable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "_newRewardLockTime",
 					"type": "uint256"
+				}
+			],
+			"name": "updateRewardLockTime",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
 				}
 			],
 			"stateMutability": "nonpayable",
 			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "_poolId",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "_newLockTime",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "_newRewardRate",
+					"type": "uint256"
+				}
+			],
+			"name": "updateStakePool",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "userStakes",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "_value",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "_usdtAmount",
+					"type": "uint256"
+				}
+			],
+			"name": "withdrawUSDT",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"stateMutability": "payable",
+			"type": "receive"
 		}
 	]
     
