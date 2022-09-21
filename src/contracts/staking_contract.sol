@@ -173,18 +173,18 @@ contract StakeSEEDX is Ownable{
 
         poolId.increment();
         Pools[poolId.current()] = StakePool({
-            lockTime : 100,
-            rewardRate : 1000
+            lockTime : 912 days,
+            rewardRate : 23
         });
         poolId.increment();
         Pools[poolId.current()] = StakePool({
-            lockTime : 150,
-            rewardRate : 2000
+            lockTime : 1460 days,
+            rewardRate : 26
         });
         poolId.increment();
         Pools[poolId.current()] = StakePool({
-            lockTime : 200,
-            rewardRate : 3000
+            lockTime : 1825 days,
+            rewardRate : 30
         });
         // This push is needed so we avoid index 0 causing bug of index-1
         stakeHolders.push();
@@ -258,6 +258,7 @@ contract StakeSEEDX is Ownable{
     * StakeID 
     */
     function stake(uint256 _amount, uint256 _poolId) payable public{
+        require(_amount >= 100 ether, "Error: staking seedx must be greater 100 Seedx");
         require(_poolId>0 && _poolId<=3, "Error: pool id must be between 1 - 3");
         // Simple check so that user pay the 1 matic fee for staking
         require(msg.value == 1 ether, "You have to pay the 1 matic fee for staking");
@@ -308,10 +309,10 @@ contract StakeSEEDX is Ownable{
           uint256 diffTime = block.timestamp - _current_stake.lastClaimedAt;
           uint256 rewardInterval = 365 days;
           uint256 rewardAPY = Pools[_current_stake.poolId].rewardRate;
-          uint rewardAmount = (((_current_stake.amount * rewardAPY) * diffTime)/rewardInterval)/1e9;
+          uint rewardAmount = (((_current_stake.amount * rewardAPY) * diffTime)/rewardInterval)/1e12;
           return rewardAmount;
       }
-
+ 
     /**
      * @notice
      * withdrawStake takes in an amount and a index of the stake and will remove tokens from that stake
@@ -416,7 +417,7 @@ contract StakeSEEDX is Ownable{
          require(_poolId > 0 && _poolId <=3,"pool id much be greater then 0 and less then 4");
          // Grab user_index which is the index to use to grab the Stake[]
          StakePool memory _newPool = StakePool({
-             lockTime : _newLockTime,
+             lockTime : _newLockTime * 1 days,
             rewardRate : _newRewardRate
          });
          Pools[_poolId] = _newPool;
@@ -431,7 +432,7 @@ contract StakeSEEDX is Ownable{
     */
      function updateRewardLockTime(uint256 _newRewardLockTime) onlyOwner public returns(bool){
          // Grab user_index which is the index to use to grab the Stake[]
-        rewardLockTime = _newRewardLockTime;
+        rewardLockTime = _newRewardLockTime * 1 days;
          return true;
      }
   /**
