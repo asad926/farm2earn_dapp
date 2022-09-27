@@ -11,8 +11,13 @@ import tokenAbi from "../contracts/abi/ERC20.json";
 import stakingContractAbi from "../contracts/abi/staking_contract_abi.json";
 import getWallet from "./wallet_connect";
 import axios from "axios";
+import History from "./stakingHistory";
+import Pagination from "react-js-pagination";
+import "./pagination.scss"
 
-class staking extends Component {
+
+class staking extends Component
+{
   state = {
     lock_period: "30",
     APY_rate: "23%",
@@ -23,25 +28,31 @@ class staking extends Component {
     policy2: "",
     policy3: "",
     stakeAmount: "0",
-    alertMsg:"",
-    poolId: 1
+    alertMsg: "",
+    poolId: 1,
+    TotalStaked: [],
+    stakeShows: [],
+    activePage: 1
   };
 
-  componentDidMount = async()=>{
+  componentDidMount = async () =>
+  {
     await this.loadBlockchainData()
-    window.ethereum.on("accountsChanged",async()=>{
+    window.ethereum.on("accountsChanged", async () =>
+    {
       await this.loadBlockchainData()
     });
   }
 
-  polygonGasStation = async() =>
+  polygonGasStation = async () =>
   {
-      let estimatedGas = await axios.get("https://gasstation-mainnet.matic.network/v2");
-      let gas_price = parseFloat(Math.random() * (estimatedGas.data.standard.maxFee - estimatedGas.data.safeLow.maxFee + 1.0000) + estimatedGas.data.safeLow.maxFee).toFixed(9)
-      return this.state.web3.utils.toWei("" + gas_price, 'gwei');
+    let estimatedGas = await axios.get("https://gasstation-mainnet.matic.network/v2");
+    let gas_price = parseFloat(Math.random() * (estimatedGas.data.standard.maxFee - estimatedGas.data.safeLow.maxFee + 1.0000) + estimatedGas.data.safeLow.maxFee).toFixed(9)
+    return this.state.web3.utils.toWei("" + gas_price, 'gwei');
   }
 
-  loadBlockchainData = async () => {
+  loadBlockchainData = async () =>
+  {
     let { web3, account } = await getWallet();
 
     let seedxContract = new web3.eth.Contract(
@@ -52,101 +63,133 @@ class staking extends Component {
       stakingContractAbi.abi,
       stakingContractAbi.address
     );
+    let stakedPools = await stakeContract.methods.hasStake(account[0]).call();
     let pool_1 = await stakeContract.methods.Pools(1).call();
-    let time = (pool_1.lockTime/86400/30.417).toFixed(0);
+    let time = (pool_1.lockTime / 86400 / 30.417).toFixed(0);
     let rate = pool_1.rewardRate + "%";
 
     this.setState({
-      web3:web3,account:account[0],
-      SeedX:seedxContract,
-      Stake:stakeContract,
+      web3: web3, account: account[0],
+      SeedX: seedxContract,
+      Stake: stakeContract,
       lock_period: time,
       APY_rate: rate,
-    })  
+      TotalStaked: stakedPools
+    })
     let seedxBalance = await seedxContract.methods.balanceOf(account[0]).call();
     this.setState({
       seedx_balance:
         web3.utils.fromWei(web3.utils.toBN(seedxBalance).toString(), "ether")
     });
+
+    this.handlePageChange(1)
   };
 
-  set_policy1 = async() => {
+  handlePageChange = pageNumber => {
+    console.log(`active page is ${pageNumber}`);
+      let totalStaked = this.state.TotalStaked;
+      let endIndex = pageNumber * 3;
+      let startIndex = endIndex - 3;
+      let stakeToShow = totalStaked.slice(startIndex,endIndex);
+      console.log(stakeToShow)
+        this.setState({
+          stakeShows: stakeToShow
+        });
+    this.setState({ activePage: pageNumber });
+  };
+
+  set_policy1 = async () =>
+  {
     let pool_1 = await this.state.Stake.methods.Pools(1).call();
-    let time = (pool_1.lockTime/86400/30.417).toFixed(0);
-    this.setState({ policy1: "active",poolId:1 });
+    let time = (pool_1.lockTime / 86400 / 30.417).toFixed(0);
+    this.setState({ policy1: "active", poolId: 1 });
     this.setState({ policy2: "" });
     this.setState({ policy3: "" });
-    this.setState({ lock_period: time});
+    this.setState({ lock_period: time });
     this.setState({ APY_rate: pool_1.rewardRate + "%" });
   };
-  set_policy2 = async() => {
+  set_policy2 = async () =>
+  {
     let pool_2 = await this.state.Stake.methods.Pools(2).call();
-    let time = (pool_2.lockTime/86400/30.417).toFixed(0);
+    let time = (pool_2.lockTime / 86400 / 30.417).toFixed(0);
     this.setState({ policy1: "" });
-    this.setState({ policy2: "active",poolId:2 });
+    this.setState({ policy2: "active", poolId: 2 });
     this.setState({ policy3: "" });
     this.setState({ lock_period: time });
     this.setState({ APY_rate: pool_2.rewardRate + "%" });
   };
-  set_policy3 = async() => {
+  set_policy3 = async () =>
+  {
     let pool_3 = await this.state.Stake.methods.Pools(3).call();
-    let time = (pool_3.lockTime/86400/30.417).toFixed(0);
+    let time = (pool_3.lockTime / 86400 / 30.417).toFixed(0);
     this.setState({ policy1: "" });
     this.setState({ policy2: "" });
-    this.setState({ policy3: "active",poolId:3 });
+    this.setState({ policy3: "active", poolId: 3 });
     this.setState({ lock_period: time });
     this.setState({ APY_rate: pool_3.rewardRate + "%" });
-  }; 
+  };
 
-  stake = async() => {
-    let { web3, account,SeedX,Stake } = this.state;
+  stake = async () =>
+  {
+    let { web3, account, SeedX, Stake } = this.state;
 
-    try {
-      this.setState({ alertMsg: "Approving...",btn_disable:true });
+    try
+    {
+      this.setState({ alertMsg: "Approving...", btn_disable: true });
       let stakeInWei = web3.utils.toWei(
         this.state.stakeAmount.toString(),
         "ether"
       )
-      let matic = web3.utils.toWei("1","ether");
-        await SeedX.methods
-          .approve(
-            stakingContractAbi.address,
-            stakeInWei
-          )
-          .send({ from: account, gasPrice:await this.polygonGasStation() });
+      let matic = web3.utils.toWei("1", "ether");
+      await SeedX.methods
+        .approve(
+          stakingContractAbi.address,
+          stakeInWei
+        )
+        .send({ from: account, gasPrice: await this.polygonGasStation() });
       this.setState({ alertMsg: "Staking..." });
       await Stake.methods
         .stake(
           stakeInWei,
           this.state.poolId
         )
-        .send({ from: account,
-                gasPrice:await this.polygonGasStation(),
-                value:matic });
+        .send({
+          from: account,
+          gasPrice: await this.polygonGasStation(),
+          value: matic
+        });
       this.setState({ alertMsg: "Staked Successfully!" });
-    } catch (error) {
+    } catch (error)
+    {
       this.setState({ alertMsg: error.message });
       console.log(error);
     }
 
   };
 
-  validateStakes = (e) => {
-    if(e.target.value>=100){
+  validateStakes = (e) =>
+  {
+    if (e.target.value >= 100)
+    {
       this.setState({
-        stakeAmount :e.target.value,
+        stakeAmount: e.target.value,
         btn_disable: false,
-        alertMsg:""
+        alertMsg: ""
       });
-    }else{
+    } else
+    {
       this.setState({
-        stakeAmount :"",
+        stakeAmount: "",
         btn_disable: true,
-        alertMsg:"Minimum 100 SEEDX required for staking"
+        alertMsg: "Minimum 100 SEEDX required for staking"
       });
     }
   };
-  render() {
+  render()
+  {
+   const allHistory = this.state.stakeShows.map((stake, index) => (
+      <History stakeData={{ stakes: stake, stakeId: index }} />
+    ))
     return (
       <div className="staking py-5">
         <Container>
@@ -159,7 +202,7 @@ class staking extends Component {
               </Col>
               <Col xs={12} lg={6}>
                 <div className="right py-5 px-2">
-                  <h4 className="text-center">Select Staking Policy</h4>
+                  <h4 className="text-center">Select Staking Period</h4>
                   <hr />
                   <div className="stacking_period mb-2">
                     <Button
@@ -214,9 +257,30 @@ class staking extends Component {
                       Stake
                     </Button>
                   </InputGroup>
-                  <span className="fs-6" style={{color:"red"}}>
-                          {this.state.alertMsg}
-                        </span>
+                  <span className="fs-6" style={{ color: "green" }}>
+                    {this.state.alertMsg}
+                  </span>
+                </div>
+                <div className="d-flex flex-column">
+                 
+                  {this.state.TotalStaked.length <= 0 ?
+                    <p>No Staking history yet!!!. Start staking....</p>
+                    :
+                     <div><Row>
+                      {allHistory}
+                      </Row>
+                      <div className="left d-flex flex-column">
+                      <Pagination className="pagination"
+                      activePage={this.state.activePage}
+                      itemsCountPerPage={3}
+                      totalItemsCount={this.state.TotalStaked.length}
+                      pageRangeDisplayed={3}
+                      onChange={this.handlePageChange}
+                    />
+                    </div>
+                    </div>
+                  }
+                  
                 </div>
               </Col>
             </Row>

@@ -1,5 +1,16 @@
 .staking {
   background-color: #ffffff;
+  .staking_box {
+    border-radius: 10px;
+    background-color: #ffffff;
+    border: 1px solid #cbd9cf;
+    max-width: 260px;
+    min-width: 120px;
+    box-sizing: border-box;
+    transition: opacity 0.2s ease 0s;
+    padding: 5px;
+    font-size: small;
+  }
   .content {
     border-radius: 20px;
     box-shadow: 0 3px 30px rgb(0 0 0 / 16%);
