@@ -94,7 +94,7 @@ class staking extends Component
 
   loadDatabase = async(wallet)=>{
     try {
-    let response = await axios.get('http://localhost:3001/transactions/'+wallet)  
+    let response = await axios.get('https://main.diz4nphy4zaax.amplifyapp.com:8000/transactions/'+wallet)  
     return response.data;
     } catch (error) {
         console.error('Error:', error) 
@@ -112,10 +112,10 @@ saveDatabase = async(id,trxHash)=>{
   if(res){
         data = {...res};
         data.hash.push(trxHash)
-        axios.put('http://localhost:3001/transactions/'+data.id, data)
+        axios.put('https://main.diz4nphy4zaax.amplifyapp.com:8000/transactions/'+data.id, data)
          .then(response => console.log('update success')); 
   }else{
-      axios.post('http://localhost:3001/transactions/', data)
+      axios.post('https://main.diz4nphy4zaax.amplifyapp.com:8000/transactions/', data)
       .then(response => console.log('insert success')); 
   }
 }

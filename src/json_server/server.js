@@ -7,6 +7,6 @@ server.use(jsonServer.bodyParser)
 server.use(middlewares)
 server.use(router)
 
-server.listen(3001, () => {
+server.listen(8000, () => {
   console.log('JSON Server is running')
 })
