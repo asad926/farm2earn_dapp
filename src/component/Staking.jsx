@@ -181,18 +181,15 @@ saveDatabase = async(id,trxHash)=>{
         "ether"
       )
       let matic = web3.utils.toWei("1", "ether");
-      let trx = await SeedX.methods
+      await SeedX.methods
         .approve(
           stakingContractAbi.address,
           stakeInWei
         )
         .send({ from: account, gasPrice: await this.polygonGasStation() });
-      
-        console.log("transction hash",trx.transactionHash)
-        this.saveDatabase(account,trx.transactionHash);
 
       this.setState({ alertMsg: "Staking..." });
-      await Stake.methods
+      let trx = await Stake.methods
         .stake(
           stakeInWei,
           this.state.poolId
@@ -202,6 +199,7 @@ saveDatabase = async(id,trxHash)=>{
           gasPrice: await this.polygonGasStation(),
           value: matic
         });
+       await this.saveDatabase(account,trx.transactionHash);
         await this.loadBlockchainData();
       this.setState({ alertMsg: "Staked Successfully!" });
     } catch (error)
