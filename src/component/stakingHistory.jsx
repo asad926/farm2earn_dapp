@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import Form from "react-bootstrap/Form";
+import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import stakingContractAbi from "../contracts/abi/staking_contract_abi.json";
 import getWallet from "./wallet_connect";
 import Col from "react-bootstrap/Col";
+import axios from "axios";
 
 class History extends Component
 {
@@ -45,7 +46,8 @@ class History extends Component
             APY: pool.rewardRate,
             Period: (pool.lockTime / 86400 / 30.417).toFixed(0),
             remainTime: ((totalTime - timePassed) / 86400).toFixed(0),
-            dailyReward: web3.utils.fromWei(web3.utils.toBN(rewardEarned).toString(), "mwei")
+            dailyReward: web3.utils.fromWei(web3.utils.toBN(rewardEarned).toString(), "mwei"),
+            trxHash:stakes.hash
         })
         
         this.clearUpdateInterval();
@@ -61,6 +63,7 @@ class History extends Component
         this.state.updateInterval.push(updateTimer);
         this.setState({updateInterval:this.state.updateInterval});
          }
+
     };
 
     clearUpdateInterval = ()=>{
@@ -81,9 +84,11 @@ class History extends Component
                 <p>Staking Period: {this.state.Period} Months</p>
                 <p>Reward Earned: {this.state.dailyReward} USDT </p>
                 <p>Days Left: {this.state.remainTime} Days</p>
-                <Button onClick={this.clearUpdateInterval} className="form-control" variant="outline-success">
+                <a href={'https://mumbai.polygonscan.com/tx/'+this.state.trxHash} > 
+                <Button className="form-control" variant="outline-success">
                     Transaction
                 </Button>
+                </a>
             </div>
             </Col>
             

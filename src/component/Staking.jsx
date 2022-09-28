@@ -68,9 +68,11 @@ class staking extends Component
     let time = (pool_1.lockTime / 86400 / 30.417).toFixed(0);
     let rate = pool_1.rewardRate + "%";
     let stakes = [];
+    let res = await this.loadDatabase(account[0]);
     stakedPools.forEach((stake,index)=>{
       let stk = { ...stake}
       stk["stakeId"] = index+1;
+      stk["hash"] = res.hash[index];
       stakes.push(stk);
     })
     this.setState({
@@ -89,6 +91,34 @@ class staking extends Component
 
     this.handlePageChange(1)
   };
+
+  loadDatabase = async(wallet)=>{
+    try {
+    let response = await axios.get('http://localhost:3001/transactions/'+wallet)  
+    return response.data;
+    } catch (error) {
+        console.error('Error:', error) 
+    }
+}
+
+
+saveDatabase = async(id,trxHash)=>{
+  id += "2"
+  let data = {
+    id:id,
+    hash:[trxHash]
+  }
+  let res = await this.loadDatabase(id);
+  if(res){
+        data = {...res};
+        data.hash.push(trxHash)
+        axios.put('http://localhost:3001/transactions/'+data.id, data)
+         .then(response => console.log('update success')); 
+  }else{
+      axios.post('http://localhost:3001/transactions/', data)
+      .then(response => console.log('insert success')); 
+  }
+}
 
   handlePageChange = pageNumber => {
     this.setState({
@@ -143,7 +173,6 @@ class staking extends Component
   stake = async () =>
   {
     let { web3, account, SeedX, Stake } = this.state;
-
     try
     {
       this.setState({ alertMsg: "Approving...", btn_disable: true });
@@ -152,12 +181,16 @@ class staking extends Component
         "ether"
       )
       let matic = web3.utils.toWei("1", "ether");
-      await SeedX.methods
+      let trx = await SeedX.methods
         .approve(
           stakingContractAbi.address,
           stakeInWei
         )
         .send({ from: account, gasPrice: await this.polygonGasStation() });
+      
+        console.log("transction hash",trx.transactionHash)
+        this.saveDatabase(account,trx.transactionHash);
+
       this.setState({ alertMsg: "Staking..." });
       await Stake.methods
         .stake(
