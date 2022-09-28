@@ -79,7 +79,7 @@ class staking extends Component
       Stake: stakeContract,
       lock_period: time,
       APY_rate: rate,
-      TotalStaked: stakes
+      TotalStaked: stakes.reverse()
     })
     let seedxBalance = await seedxContract.methods.balanceOf(account[0]).call();
     this.setState({
@@ -169,6 +169,7 @@ class staking extends Component
           gasPrice: await this.polygonGasStation(),
           value: matic
         });
+        await this.loadBlockchainData();
       this.setState({ alertMsg: "Staked Successfully!" });
     } catch (error)
     {
