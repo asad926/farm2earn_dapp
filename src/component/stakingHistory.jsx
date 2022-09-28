@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import stakingContractAbi from "../contracts/abi/staking_contract_abi.json";
 import getWallet from "./wallet_connect";
 import Col from "react-bootstrap/Col";
+
 class History extends Component
 {
     state = {
@@ -12,29 +13,32 @@ class History extends Component
         Period: "",
         dailyReward: "",
         remainTime: "",
-        transaction: ""
+        transaction: "",
+        updateInterval: [],
+        isSetInterval: false
     }
-
-
+    
     componentDidMount = async () =>
-    {
-        await this.loadStakedData()
+    { 
+        await this.loadStakedData();
     }
 
     loadStakedData = async () =>
     {
+
         let { web3, account } = await getWallet();
 
         let stakeContract = new web3.eth.Contract(
             stakingContractAbi.abi,
             stakingContractAbi.address
-        );
-        let { stakes, stakeId } = this.props.stakeData;
+        ); 
+        let {stakes,stakeId} = this.props.stakeData;
         this.setState({
-            stakedAmount: web3.utils.fromWei(web3.utils.toBN(stakes.amount).toString(), "ether")
+            stakedAmount: web3.utils.fromWei(web3.utils.toBN(stakes.amount).toString(), "ether"),
+            stakeId:stakeId
         })
         let pool = await stakeContract.methods.Pools(stakes.poolId).call();
-        let rewardEarned = await stakeContract.methods.rewardInfo(account[0], stakeId + 1).call();
+        let rewardEarned = await stakeContract.methods.rewardInfo(account[0], stakeId).call();
         let timePassed = Date.now() / 1000 - parseInt(stakes.stakeAt);
         let totalTime = parseInt(stakes.endAt);
         this.setState({
@@ -43,15 +47,28 @@ class History extends Component
             remainTime: ((totalTime - timePassed) / 86400).toFixed(0),
             dailyReward: web3.utils.fromWei(web3.utils.toBN(rewardEarned).toString(), "mwei")
         })
-
-
-        setInterval(() =>
+        
+        this.clearUpdateInterval();
+        let updateTimer;
+         if(!this.state.isSetInterval){
+         updateTimer = setInterval(() =>
         {
         let timeDiff = (Date.now() / 1000 - parseInt(stakes.lastClaimedAt))/86400;
         let rewardEarned = (parseFloat(this.state.stakedAmount)*parseFloat(this.state.APY)*timeDiff)/365;
         this.setState({dailyReward:rewardEarned.toFixed(4)})
         }, 1000);
+        this.setState({isSetInterval: true});
+        this.state.updateInterval.push(updateTimer);
+        this.setState({updateInterval:this.state.updateInterval});
+         }
     };
+
+    clearUpdateInterval = ()=>{
+        for(let id of this.state.updateInterval) {
+            clearInterval(id)
+        };
+        this.setState({updateInterval:[],isSetInterval: false});
+    }
 
     render()
     {
@@ -64,7 +81,7 @@ class History extends Component
                 <p>Staking Period: {this.state.Period} Months</p>
                 <p>Reward Earned: {this.state.dailyReward} USDT </p>
                 <p>Days Left: {this.state.remainTime} Days</p>
-                <Button className="form-control" variant="outline-success">
+                <Button onClick={this.clearUpdateInterval} className="form-control" variant="outline-success">
                     Transaction
                 </Button>
             </div>

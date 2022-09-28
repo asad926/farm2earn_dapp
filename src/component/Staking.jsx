@@ -14,7 +14,7 @@ import axios from "axios";
 import History from "./stakingHistory";
 import Pagination from "react-js-pagination";
 import "./pagination.scss"
-
+let allHistory
 
 class staking extends Component
 {
@@ -67,14 +67,19 @@ class staking extends Component
     let pool_1 = await stakeContract.methods.Pools(1).call();
     let time = (pool_1.lockTime / 86400 / 30.417).toFixed(0);
     let rate = pool_1.rewardRate + "%";
-
+    let stakes = [];
+    stakedPools.forEach((stake,index)=>{
+      let stk = { ...stake}
+      stk["stakeId"] = index+1;
+      stakes.push(stk);
+    })
     this.setState({
       web3: web3, account: account[0],
       SeedX: seedxContract,
       Stake: stakeContract,
       lock_period: time,
       APY_rate: rate,
-      TotalStaked: stakedPools
+      TotalStaked: stakes
     })
     let seedxBalance = await seedxContract.methods.balanceOf(account[0]).call();
     this.setState({
@@ -86,16 +91,22 @@ class staking extends Component
   };
 
   handlePageChange = pageNumber => {
+    this.setState({
+      stakeShows: []
+    });
     console.log(`active page is ${pageNumber}`);
-      let totalStaked = this.state.TotalStaked;
-      let endIndex = pageNumber * 3;
+      let totalStaked = [...this.state.TotalStaked];
+      let endIndex = pageNumber * 3; 
       let startIndex = endIndex - 3;
-      let stakeToShow = totalStaked.slice(startIndex,endIndex);
-      console.log(stakeToShow)
+      let stakeToShow = [...totalStaked.slice(startIndex,endIndex)];
+      
+    allHistory = stakeToShow.map((stake) => {
+      return <History key={stake.stakeId} stakeData={{ stakes: stake, stakeId: stake.stakeId }} />;
+  })
         this.setState({
-          stakeShows: stakeToShow
+          stakeShows: stakeToShow,
+          activePage: pageNumber
         });
-    this.setState({ activePage: pageNumber });
   };
 
   set_policy1 = async () =>
@@ -187,10 +198,8 @@ class staking extends Component
   };
   render()
   {
-   const allHistory = this.state.stakeShows.map((stake, index) => (
-      <History stakeData={{ stakes: stake, stakeId: index }} />
-    ))
-    return (
+
+    return ( 
       <div className="staking py-5">
         <Container>
           <div className="content py-5 px-2">
