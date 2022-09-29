@@ -8,7 +8,6 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
     "bootstrap": "^5.2.1",
-    "concurrently": "^7.4.0",
     "json-server": "^0.17.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",
@@ -22,7 +21,7 @@
     "web3": "^1.7.5"
   },
   "scripts": {
-    "start": "concurrently --kill-others \"react-scripts start\" \"node src/json_server/server.js\"",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
