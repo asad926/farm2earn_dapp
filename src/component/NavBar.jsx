@@ -7,24 +7,19 @@ import Navbar from "react-bootstrap/Navbar";
 import F2E_one from "../img/F2E one.png";
 import getWallet from "./wallet_connect";
 
-class navBar extends Component
-{
+class navBar extends Component {
   state = { connect_btn: "Connect Wallet" };
 
-  componentDidMount = async () =>
-  {
+  componentDidMount = async () => {
     await this.connectWallet();
-    window.ethereum.on("accountsChanged", async () =>
-    {
-      await this.connectWallet()
+    window.ethereum.on("accountsChanged", async () => {
+      await this.connectWallet();
     });
   };
 
-  connectWallet = async () =>
-  {
+  connectWallet = async () => {
     let wallet = await getWallet();
-    if (wallet.account.length > 0)
-    {
+    if (wallet.account.length > 0) {
       let account =
         wallet.account[0].substr(0, 4) +
         "......" +
@@ -32,8 +27,7 @@ class navBar extends Component
       this.setState({ connect_btn: account });
     }
   };
-  render()
-  {
+  render() {
     return (
       <Navbar bg="light" expand="lg" sticky="top">
         <Container>
@@ -55,11 +49,18 @@ class navBar extends Component
               <Link className="nav-link" to="/staking">
                 Staking
               </Link>
-
             </Nav>
-            <div className="d-grid">
-              <Button className="text-center" onClick={this.connectWallet} variant="outline-success">{this.state.connect_btn}</Button>
-
+            <div className="d-flex flex-row align-items-center">
+              <Link to="/admine" className="btn me-2 admin_btn">
+                Admine
+              </Link>
+              <Button
+                className="text-center"
+                onClick={this.connectWallet}
+                variant="outline-success"
+              >
+                {this.state.connect_btn}
+              </Button>
             </div>
           </Navbar.Collapse>
         </Container>

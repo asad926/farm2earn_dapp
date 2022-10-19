@@ -89,8 +89,8 @@
 }
 .navbar {
   min-height: 140px;
-  .d-grid{
-    justify-items:center;
+  .d-grid {
+    justify-items: center;
     margin-left: -2rem;
   }
   .navbar-nav {
@@ -101,6 +101,14 @@
       &:hover {
         color: rgba(61, 210, 227);
       }
+    }
+  }
+  .admin_btn {
+    border: 1px solid #000000;
+    &:hover {
+      background-color: #973e45 !important;
+      border-color: #973e45 !important;
+      color: #ffffff !important;
     }
   }
 }
@@ -130,6 +138,111 @@
         color: black;
         margin-left: 5px;
         margin-right: 5px;
+      }
+    }
+  }
+}
+.admine {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #e1eee8;
+  min-height: 100vh;
+  .side_bar {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    .btn-primary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #55984a;
+      border: 1px solid #487b46;
+      border-radius: 0px;
+      text-align: start;
+      &:hover {
+        background-color: #5d9e53;
+        border-color: #5d9e53;
+      }
+      .icon {
+        color: #ffffff;
+        margin-left: 16px;
+      }
+    }
+  }
+  .content_bar {
+    width: 100%;
+    padding: 48px;
+  }
+  @media screen and (min-width: 576px) {
+    .side_bar {
+      width: 30%;
+    }
+    .content_bar {
+      width: 70%;
+      padding: 48px;
+    }
+  }
+  @media screen and (min-width: 768px) {
+    .side_bar {
+      width: 20%;
+    }
+    .content_bar {
+      width: 80%;
+      padding: 48px;
+    }
+  }
+}
+.dashboard {
+  .states_box {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+    .state {
+      text-align: center;
+      padding: 8px 8px 16px 8px;
+      width: 208px;
+      border-radius: 8px;
+      background-color: #ffffff;
+      box-shadow: 2px 2px 10px #888888;
+      margin-right: 16px;
+      margin-bottom: 16px;
+
+      p {
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .table_box {
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 2px 2px 10px #888888;
+    table {
+      font-size: 14px;
+      thead {
+        tr {
+          th {
+            border-bottom: 2px solid #000000;
+          }
+        }
+      }
+      tbody {
+        tr {
+          td {
+            text-align: center;
+            .btn-primary {
+              background-color: #852a32;
+              border-color: #852a32;
+              transition: all 1s;
+              font-size: 14px;
+              &:hover {
+                background-color: #b85059;
+                border-color: #b85059;
+              }
+            }
+          }
+        }
       }
     }
   }
