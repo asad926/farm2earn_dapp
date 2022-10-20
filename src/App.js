@@ -13,7 +13,7 @@ function App() {
         <Route exact path="/" element={<Swap_form />} />
         <Route path="/swap" element={<Swap_form />} />
         <Route path="/staking" element={<Staking />} />
-        <Route path="/admine" element={<Admin />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
       <Footer />
     </BrowserRouter>

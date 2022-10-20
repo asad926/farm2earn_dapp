@@ -46,7 +46,7 @@ class History extends Component
             APY: pool.rewardRate,
             Period: (pool.lockTime / 86400 / 30.417).toFixed(0),
             remainTime: ((totalTime - timePassed) / 86400).toFixed(0),
-            dailyReward: web3.utils.fromWei(web3.utils.toBN(rewardEarned).toString(), "mwei"),
+            dailyReward: web3.utils.fromWei(web3.utils.toBN(rewardEarned).toString(), "mwei")/100,
             trxHash:stakes.hash
         })
         
@@ -56,8 +56,8 @@ class History extends Component
          updateTimer = setInterval(() =>
         {
         let timeDiff = (Date.now() / 1000 - parseInt(stakes.lastClaimedAt))/86400;
-        let rewardEarned = (parseFloat(this.state.stakedAmount)*parseFloat(this.state.APY)*timeDiff)/365;
-        this.setState({dailyReward:rewardEarned.toFixed(4)})
+        let rewardEarned = (parseFloat(this.state.stakedAmount)*parseFloat(this.state.APY)*timeDiff)/36500;
+        this.setState({dailyReward:rewardEarned.toFixed(6)})
         }, 1000);
         this.setState({isSetInterval: true});
         this.state.updateInterval.push(updateTimer);

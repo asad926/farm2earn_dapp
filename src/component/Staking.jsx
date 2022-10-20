@@ -103,7 +103,6 @@ class staking extends Component
 
 
 saveDatabase = async(id,trxHash)=>{
-  id += "2"
   let data = {
     id:id,
     hash:[trxHash]

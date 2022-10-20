@@ -8,7 +8,10 @@ import F2E_one from "../img/F2E one.png";
 import getWallet from "./wallet_connect";
 
 class navBar extends Component {
-  state = { connect_btn: "Connect Wallet" };
+  state = { 
+    connect_btn: "Connect Wallet",
+    account: ""
+   };
 
   componentDidMount = async () => {
     await this.connectWallet();
@@ -20,6 +23,8 @@ class navBar extends Component {
   connectWallet = async () => {
     let wallet = await getWallet();
     if (wallet.account.length > 0) {
+      console.log(wallet.account[0])
+      this.setState({ account: wallet.account[0] });
       let account =
         wallet.account[0].substr(0, 4) +
         "......" +
@@ -51,9 +56,11 @@ class navBar extends Component {
               </Link>
             </Nav>
             <div className="d-flex flex-row align-items-center">
-              <Link to="/admine" className="btn me-2 admin_btn">
-                Admine
-              </Link>
+              {this.state.account.toLowerCase() == "0x1dc61850cd03f6b35cbe0f1b2faa0e328d0f6a81"?
+              <Link to="/admin" className="btn me-2 admin_btn">
+                Admin
+              </Link>: ""
+             }
               <Button
                 className="text-center"
                 onClick={this.connectWallet}
